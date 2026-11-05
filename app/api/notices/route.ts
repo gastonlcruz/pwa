@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
   if (!appUrl || !token) {
     return NextResponse.json({ ok: false, error: "Faltan NEXT_PUBLIC_APP_URL o QSTASH_TOKEN" }, { status: 500 });
   }
-  const qstash = new Client({ token });
+  // QSTASH_URL es el endpoint de la región de tu cuenta (ej. https://qstash-us-east-1.upstash.io).
+  const qstash = new Client({ token, baseUrl: process.env.QSTASH_URL });
 
   // 1. Cancelar el aviso activo anterior (un solo aviso activo por vez).
   const { data: previous } = await supabase
