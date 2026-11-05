@@ -3,6 +3,7 @@ import { Receiver } from "@upstash/qstash";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { getBrand } from "@/lib/brand";
+import { sendPushToUser } from "@/lib/push";
 
 // POST /api/alert
 // Lo llama QStash a la hora programada. No hay sesión de usuario: por eso usa la
@@ -89,5 +90,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Correo enviado, pero no se actualizó el estado" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  // Push al celular (canal principal). Si falla, el correo ya salió: no reintentamos por esto.
+  const push = await sendPushToUser(admin, notice.issuer_id, {
+    title: brand.name,
+    body: "Se disparó tu aviso. Entrá a la app para confirmar que estás bien.",
+    url: "/home",
+  }).catch(() => ({ sent: 0 }));
+
+  return NextResponse.json({ ok: true, push_sent: push.sent });
 }

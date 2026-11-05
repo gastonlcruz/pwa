@@ -4,6 +4,7 @@ import { getBrand } from "@/lib/brand";
 import SignOutButton from "@/components/auth/SignOutButton";
 import TestEmailButton from "@/components/auth/TestEmailButton";
 import NoticeForm from "@/components/notices/NoticeForm";
+import PushButton from "@/components/pwa/PushButton";
 
 // Placeholder del núcleo: solo confirma que registro, sesión y base de datos funcionan.
 // El flujo "Home y confirmación" (E1, E2, E6) lo reemplaza.
@@ -40,6 +41,7 @@ export default async function HomePage() {
       </section>
 
       <TestEmailButton />
+      <PushButton />
 
       <hr className="border-border" />
 
