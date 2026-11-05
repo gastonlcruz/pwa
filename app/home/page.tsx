@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBrand } from "@/lib/brand";
 import SignOutButton from "@/components/auth/SignOutButton";
 import TestEmailButton from "@/components/auth/TestEmailButton";
+import NoticeForm from "@/components/notices/NoticeForm";
 
 // Placeholder del núcleo: solo confirma que registro, sesión y base de datos funcionan.
 // El flujo "Home y confirmación" (E1, E2, E6) lo reemplaza.
@@ -39,6 +40,14 @@ export default async function HomePage() {
       </section>
 
       <TestEmailButton />
+
+      <hr className="border-border" />
+
+      <section className="space-y-3">
+        <h2 className="font-medium">Probar Aviso</h2>
+        <NoticeForm />
+      </section>
+
       <SignOutButton />
     </main>
   );

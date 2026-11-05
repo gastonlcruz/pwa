@@ -6,7 +6,7 @@ const inputClass =
   "w-full min-h-11 rounded-lg border border-border bg-surface px-3 py-2 text-text focus:outline-2 focus:outline-brand-primary";
 
 export default function NoticeForm() {
-  const [fireAt, setFireAt] = useState("");
+  const [time, setTime] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -15,13 +15,19 @@ export default function NoticeForm() {
     e.preventDefault();
     setError(null);
     setStatus(null);
-    if (!fireAt) return setError("Elegí una fecha y hora.");
+    if (!time) return setError("Elegí una hora.");
+
+    // Próxima vez que llega esa hora: hoy si todavía no pasó, si no mañana.
+    const [h, m] = time.split(":").map(Number);
+    const fireAt = new Date();
+    fireAt.setHours(h, m, 0, 0);
+    if (fireAt.getTime() - Date.now() < 60 * 1000) fireAt.setDate(fireAt.getDate() + 1);
 
     setLoading(true);
     const res = await fetch("/api/notices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fire_at: new Date(fireAt).toISOString() }),
+      body: JSON.stringify({ fire_at: fireAt.toISOString() }),
     });
     const json = (await res.json()) as { ok: boolean; error?: string };
     setLoading(false);
@@ -33,14 +39,14 @@ export default function NoticeForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label htmlFor="fire_at" className="mb-1 block text-sm font-medium">
-          Fecha y hora del aviso
+        <label htmlFor="fire_time" className="mb-1 block text-sm font-medium">
+          Hora del aviso
         </label>
         <input
-          id="fire_at"
-          type="datetime-local"
-          value={fireAt}
-          onChange={(e) => setFireAt(e.target.value)}
+          id="fire_time"
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
           required
           className={inputClass}
         />
