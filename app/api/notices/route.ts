@@ -83,10 +83,12 @@ export async function POST(req: NextRequest) {
     });
     const messageId = "messageId" in res ? res.messageId : null;
     await supabase.from("notices").update({ qstash_message_id: messageId }).eq("id", notice.id);
-  } catch {
+  } catch (e) {
     // Si QStash falla, el aviso no puede quedar activo sin disparo.
     await supabase.from("notices").update({ state: "off" }).eq("id", notice.id);
-    return NextResponse.json({ ok: false, error: "No se pudo programar el aviso" }, { status: 502 });
+    const detail = e instanceof Error ? e.message : "Error desconocido";
+    console.error("[notices] QStash publish falló:", detail);
+    return NextResponse.json({ ok: false, error: `No se pudo programar el aviso: ${detail}` }, { status: 502 });
   }
 
   return NextResponse.json({ ok: true, id: notice.id, fire_at: fireAt.toISOString() });
